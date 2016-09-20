@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>123</title>
+	<script type="text/javascript" src="./jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="./t1.js"></script>
+</head>
+<body>
+<input type="file" id="files" name="files[]"   /></input>
+<input type="button" onclick="getCheckSum()" value="Get checksum">
+<div id="ct" style="border:2px solid black;		width: 500px;
+		height: 500px;		overflow: scroll;"></div>
+<input type="button" onclick="$('#ct').text('');" value="Clear">	
+<script>
+$('#files').change(handleFileSelect);
+var reader = new FileReader();
+
+function handleFileSelect(evt) {
+	var files = evt.target.files;
+	for (var i = 0, f; f = files[i]; i++) {		
+		reader.onload = (function(theFile) {
+			return function(e) {
+				dxfFile = e.target.result;
+				$('#ct').text(dxfFile);
+			};
+		})(f);
+		reader.readAsBinaryString(f);
+	}	
+}
+
+function getCheckSum() {
+	var crc8 = new CRC8();	
+
+	var input = $('#ct').text();
+
+
+	var byte_array = input.split('').map(function(x){return x.charCodeAt(0)});
+	var checksum = crc8.checksum(byte_array);
+
+	console.log('Checksum in 16-base: ' + d2h(checksum));
+
+	console.log('Checksum in 10-base: ' + checksum);
+
+	console.log('Checksum in 2-base: ' + d2b(checksum));
+}
+
+function clear() {
+  console.log('CLEAR');
+  $('#ct').text('');
+}
+</script>
+</body>
+</html>
